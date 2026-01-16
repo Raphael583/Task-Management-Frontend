@@ -15,7 +15,7 @@ export function Navbar() {
                 Task Management System
               </span>
               <span className="text-[11px] text-muted-foreground leading-tight hidden sm:block">
-                Powered by intelligent workflows
+               
               </span>
             </div>
           </div>

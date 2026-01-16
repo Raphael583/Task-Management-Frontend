@@ -1,17 +1,17 @@
 const BASE_URL = 'http://localhost:3000';
 
 export interface Task {
-  id: string;
+  _id: string;
   title: string;
   state: 'Not Started' | 'In Progress' | 'Completed';
   createdAt?: string;
 }
 
-export interface AICommandResponse {
-  message?: string;
-  tasks?: Task[];
-  error?: string;
-}
+export type AICommandResponse =
+  | Task
+  | Task[]
+  | { message: string }
+  | { error: string };
 
 export async function createTask(title: string): Promise<Task> {
   const response = await fetch(`${BASE_URL}/tasks`, {
@@ -47,12 +47,18 @@ export async function deleteTask(taskId: string): Promise<void> {
   if (!response.ok) throw new Error('Failed to delete task');
 }
 
-export async function runAICommand(command: string): Promise<AICommandResponse> {
+export async function runAICommand(
+  command: string,
+): Promise<AICommandResponse> {
   const response = await fetch(`${BASE_URL}/ai/command`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ command }),
   });
-  if (!response.ok) throw new Error('AI command failed');
+
+  if (!response.ok) {
+    throw new Error('AI command failed');
+  }
+
   return response.json();
 }

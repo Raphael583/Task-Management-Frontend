@@ -52,12 +52,12 @@ export function TaskList({
     <div className="space-y-3">
       {tasks.map((task, index) => (
         <TaskCard
-          key={task.id}
+          key={task._id}
           task={task}
           onAdvanceState={onAdvanceState}
           onDelete={onDelete}
-          isUpdating={updatingTaskId === task.id}
-          isDeleting={deletingTaskId === task.id}
+          isUpdating={updatingTaskId === task._id}
+          isDeleting={deletingTaskId === task._id}
           animationDelay={index * 50}
         />
       ))}

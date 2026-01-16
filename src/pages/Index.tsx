@@ -114,31 +114,51 @@ const Index = () => {
       setDeletingTaskId(null);
     }
   };
+const handleRunAICommand = async (command: string) => {
+  setIsRunningAI(true);
+  setAIResult(null);
+  setAIError(null);
 
-  const handleRunAICommand = async (command: string) => {
-    setIsRunningAI(true);
-    setAIResult(null);
-    setAIError(null);
-    try {
-      const response = await runAICommand(command);
-      if (response.error) {
-        setAIError(response.error);
-        toast.error('AI command failed', response.error);
-      } else {
-        const message = response.message || 'Command executed successfully';
-        setAIResult(message);
-        await fetchTasks(activeFilter, false);
-        toast.success('AI command executed', message);
-      }
-    } catch (err) {
-      const errorMsg = 'AI command failed. Please try again.';
-      setAIError(errorMsg);
-      toast.error('AI command failed', 'The AI service may be unavailable.');
-      console.error('Error running AI command:', err);
-    } finally {
-      setIsRunningAI(false);
+  try {
+    const response = await runAICommand(command);
+
+    //  SHOW_TASKS → Task[]
+    if (Array.isArray(response)) {
+      setTasks(response);
+      setAIResult(`Showing ${response.length} task(s)`);
+      toast.success('Tasks loaded');
+      return;
     }
-  };
+
+    //  ERROR OBJECT
+    if ('error' in response) {
+      setAIError(response.error);
+      toast.error('AI command failed', response.error);
+      return;
+    }
+
+    //  MESSAGE OBJECT
+    if ('message' in response) {
+      setAIResult(response.message);
+      toast.success('AI command executed', response.message);
+      await fetchTasks(activeFilter, false);
+      return;
+    }
+
+    //  TASK OBJECT (CREATE / UPDATE)
+    await fetchTasks(activeFilter, false);
+    toast.success('AI command executed successfully');
+  } catch (err) {
+    const errorMsg = 'AI command failed. Please try again.';
+    setAIError(errorMsg);
+    toast.error('AI command failed', 'The AI service may be unavailable.');
+    console.error('Error running AI command:', err);
+  } finally {
+    setIsRunningAI(false);
+  }
+};
+
+
 
   const handleFilterChange = (filter: FilterOption) => {
     setActiveFilter(filter);

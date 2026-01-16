@@ -86,7 +86,7 @@ export function TaskCard({
         )}>
           {config.next && (
             <button
-              onClick={() => onAdvanceState(task.id, task.state)}
+              onClick={() => onAdvanceState(task._id, task.state)}
               disabled={isLoading}
               className="btn-primary text-sm py-1.5 px-3"
             >
@@ -101,7 +101,7 @@ export function TaskCard({
             </button>
           )}
           <button
-            onClick={() => onDelete(task.id)}
+            onClick={() => onDelete(task._id)}
             disabled={isLoading}
             className="btn-danger"
             aria-label="Delete task"
