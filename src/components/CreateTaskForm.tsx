@@ -20,28 +20,27 @@ export function CreateTaskForm({ onCreateTask, isCreating }: CreateTaskFormProps
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-3">
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Enter a new task..."
-        className={cn(
-          'flex-1 px-4 py-3 rounded-xl border border-border bg-card',
-          'text-foreground placeholder:text-muted-foreground',
-          'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary',
-          'transition-all duration-200'
-        )}
-        disabled={isCreating}
-      />
+      <div className="relative flex-1">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter a task title…"
+          className="input-field pr-12"
+          disabled={isCreating}
+        />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+            ↵
+          </kbd>
+        </div>
+      </div>
       <button
         type="submit"
         disabled={!title.trim() || isCreating}
         className={cn(
-          'flex items-center gap-2 px-6 py-3 rounded-xl font-medium',
-          'bg-primary text-primary-foreground',
-          'hover:bg-primary/90 transition-all duration-200',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-          'shadow-sm hover:shadow-md'
+          'btn-primary px-5',
+          isCreating && 'animate-pulse-soft'
         )}
       >
         {isCreating ? (

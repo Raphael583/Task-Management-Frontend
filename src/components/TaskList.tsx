@@ -1,6 +1,6 @@
 import { Task } from '@/lib/api';
-import { TaskItem } from './TaskItem';
-import { Loader2, ClipboardList } from 'lucide-react';
+import { TaskCard } from './TaskCard';
+import { Loader2, Inbox, Sparkles } from 'lucide-react';
 
 interface TaskListProps {
   tasks: Task[];
@@ -21,36 +21,44 @@ export function TaskList({
 }: TaskListProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+        <p className="text-sm text-muted-foreground">Loading tasks...</p>
       </div>
     );
   }
 
   if (tasks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-          <ClipboardList className="w-8 h-8 text-muted-foreground" />
+      <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+          <Inbox className="w-8 h-8 text-muted-foreground" />
         </div>
-        <h3 className="font-medium text-foreground mb-1">No tasks yet</h3>
-        <p className="text-sm text-muted-foreground">
-          Create a new task to get started
+        <h3 className="font-semibold text-foreground text-lg mb-1">No tasks yet</h3>
+        <p className="text-sm text-muted-foreground max-w-[280px]">
+          Create a task or use the AI assistant to get started
         </p>
+        <div className="flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full bg-accent text-xs text-accent-foreground">
+          <Sparkles className="w-3 h-3" />
+          Try: "Add a task to review the project"
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
-      {tasks.map((task) => (
-        <TaskItem
+      {tasks.map((task, index) => (
+        <TaskCard
           key={task.id}
           task={task}
           onAdvanceState={onAdvanceState}
           onDelete={onDelete}
           isUpdating={updatingTaskId === task.id}
           isDeleting={deletingTaskId === task.id}
+          animationDelay={index * 50}
         />
       ))}
     </div>
