@@ -57,6 +57,28 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        state: {
+          notstarted: {
+            DEFAULT: "hsl(var(--state-notstarted))",
+            foreground: "hsl(var(--state-notstarted-foreground))",
+          },
+          inprogress: {
+            DEFAULT: "hsl(var(--state-inprogress))",
+            foreground: "hsl(var(--state-inprogress-foreground))",
+          },
+          completed: {
+            DEFAULT: "hsl(var(--state-completed))",
+            foreground: "hsl(var(--state-completed-foreground))",
+          },
+        },
+        ai: {
+          DEFAULT: "hsl(var(--ai))",
+          foreground: "hsl(var(--ai-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
