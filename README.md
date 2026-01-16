@@ -17,3 +17,7 @@ This is the frontend application for the Task Management System.
 ```bash
 npm install
 npm run dev
+
+## Backend Repository
+The backend for this project is available here:
+https://github.com/Raphael583/task-management-backend
