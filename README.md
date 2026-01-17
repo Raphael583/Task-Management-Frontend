@@ -1,151 +1,213 @@
-# Task Management System – Frontend
+# Task Management System with AI Assistance
 
-This repository contains the **frontend implementation** of the Task Management System.
-The frontend provides a user-friendly interface for managing tasks and interacting with the system using **natural-language AI commands**.
+## Overview
 
-The application communicates with a NestJS backend through REST APIs and does not contain any business logic or state transition rules.
+This project is a full-stack **Task Management System** that allows users to create, manage, and track tasks through predefined states.
+It also includes an **AI-powered command assistant** that understands natural language commands such as:
 
----
+* Add a task
+* Start working on a task
+* Mark a task as completed
+* Show all completed / in-progress / not-started tasks
 
-## Features
-
-* Create, view, update, and delete tasks
-* Filter tasks by state:
-
-  * Not Started
-  * In Progress
-  * Completed
-* Advance task states following backend-enforced rules
-* Interact with tasks using natural-language AI commands
-* Responsive and clean user interface
-
----
-
-## Task Interaction Flow
-
-All user actions (manual or AI-driven) follow the same backend logic:
-
-1. User performs an action from the UI or AI input
-2. Frontend sends a request to the backend API
-3. Backend validates and processes the request
-4. Frontend updates the UI based on backend response
-
-The frontend does not:
-
-* Implement state transition logic
-* Directly access the database
-* Override backend validations
-
----
-
-## AI Command Interface
-
-The frontend provides an input field for natural-language commands such as:
-
-* Add a task to prepare presentation
-* Start working on presentation task
-* Mark presentation task as completed
-* Show all completed tasks
-
-These commands are sent to the backend AI endpoint, which interprets the intent and triggers the appropriate backend logic.
-
-The frontend treats AI responses as **untrusted input** and updates the UI only after receiving validated responses from the backend.
+The system is designed with a clear separation of concerns between frontend and backend, with all business logic and validation handled on the backend.
 
 ---
 
 ## Tech Stack
 
-* React
-* TypeScript
-* Tailwind CSS
-* Vite
+### Backend
+
+* **NestJS** (Node.js framework)
+* **MongoDB** with **Mongoose**
+* **Google Gemini API** (AI command interpretation)
+
+### Frontend
+
+* **React** (Vite + TypeScript)
+* **Tailwind CSS**
+* **Fetch API** for backend communication
 
 ---
 
-## Project Structure
+## High-Level Architecture
 
 ```
-src/
-├── components/        # Reusable UI components
-├── pages/             # Page-level components
-├── lib/               # API interaction logic
-├── hooks/             # Custom React hooks
-└── styles/            # Styling and theme configuration
+Frontend (React)
+   |
+   |  REST API (HTTP / JSON)
+   |
+Backend (NestJS)
+   |
+   |  Mongoose ODM
+   |
+MongoDB
 ```
+
+### Architecture Highlights
+
+* Frontend handles UI rendering and user interactions only
+* Backend enforces all rules related to task state transitions
+* AI logic lives entirely on the backend
+* Frontend never directly modifies task state logic
 
 ---
 
-## Backend Integration
+## Task State Design
 
-The frontend communicates with the backend through REST APIs.
+Each task follows a strict state machine implemented on the backend.
 
-### Backend Base URL
+### Task States
 
-```
-http://localhost:3000
-```
+* **NOT_STARTED**
+* **IN_PROGRESS**
+* **COMPLETED**
 
-Ensure the backend server is running before starting the frontend.
+### Allowed Transitions
+
+| From        | To          |
+| ----------- | ----------- |
+| NOT_STARTED | IN_PROGRESS |
+| IN_PROGRESS | COMPLETED   |
+
+Invalid transitions are rejected at the backend level.
+
+### Why This Design
+
+* Prevents inconsistent task states
+* Keeps business rules centralized
+* Makes the system predictable and scalable
 
 ---
 
-## Running the Frontend Locally
+## Backend Design
 
-### Prerequisites
+### Core Modules
 
-* Node.js (v18+ recommended)
-* Backend server running locally
+* `TasksModule` – Task CRUD and state management
+* `AiModule` – AI command interpretation and execution
+* `DatabaseModule` – MongoDB connection
 
-### Installation
+### Task Handling
+
+* Tasks are stored in MongoDB
+* All state changes are validated in `TasksService`
+* Invalid state changes return proper HTTP errors
+
+### API Endpoints
+
+* `POST /tasks` – Create task
+* `GET /tasks` – Fetch all tasks
+* `GET /tasks?state=COMPLETED` – Fetch filtered tasks
+* `PATCH /tasks/:id/state` – Update task state
+* `DELETE /tasks/:id` – Delete task
+* `POST /ai/command` – Execute AI command
+
+---
+
+## AI Integration Approach
+
+### AI Flow
+
+1. User enters a natural language command in the UI
+2. Frontend sends the command to `/ai/command`
+3. Backend interprets intent using:
+
+   * Rule-based parsing (deterministic)
+   * Optional Gemini API for advanced interpretation
+4. Backend maps intent to a concrete action:
+
+   * CREATE_TASK
+   * UPDATE_TASK_STATE
+   * SHOW_TASKS
+5. Action is executed using existing task services
+6. Result is returned to the frontend
+
+### Why AI Is Backend-Driven
+
+* Prevents frontend manipulation
+* Ensures consistent behavior
+* Keeps AI logic secure and testable
+
+---
+
+## Frontend Design
+
+### Key Features
+
+* Task list with filters (All / Not Started / In Progress / Completed)
+* Add, update, and delete tasks
+* AI command input with execution feedback
+* Real-time UI updates after AI actions
+
+### Frontend Responsibilities
+
+* Render task data received from backend
+* Trigger API calls
+* Update UI state based on backend responses
+
+### AI Command UI Behavior
+
+* AI commands do not directly modify UI
+* Backend returns task data or messages
+* Frontend updates task list accordingly
+
+---
+
+## Key Design Decisions
+
+### 1. Backend-First Validation
+
+All task rules are enforced on the backend to prevent invalid states.
+
+### 2. Deterministic AI Commands
+
+AI commands are converted into structured actions instead of free-form execution.
+
+### 3. Stateless Frontend
+
+Frontend does not store business rules or task logic.
+
+### 4. Clear Separation of Concerns
+
+Each layer (UI, API, DB, AI) has a single responsibility.
+
+---
+
+## How to Run the Project
+
+### Backend
 
 ```bash
+cd backend
 npm install
+npm run start:dev
 ```
 
-### Start the development server
+### Frontend
 
 ```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-The frontend will be available at:
-
-```
-http://localhost:8080
-```
+Backend runs on `http://localhost:3000`
+Frontend runs on `http://localhost:8080`
 
 ---
 
-## Backend Repository
+## Conclusion
 
-The backend for this project is maintained separately:
+This project demonstrates:
 
-Backend Repository:
-[https://github.com/Raphael583/task-management-backend](https://github.com/Raphael583/task-management-backend)
+* Clean backend architecture with enforced business rules
+* Structured task state management
+* Practical AI integration for real-world usage
+* A responsive frontend consuming backend-driven logic
 
----
-
-## Design Principles
-
-* Clear separation between UI and business logic
-* Backend-driven validation and state control
-* Predictable and consistent UI behavior
-* AI treated as an assistive input layer only
+The system is designed to be scalable, maintainable, and secure while showcasing intelligent task automation.
 
 ---
 
-## Submission Notes
-
-* No environment files or build artifacts are included
-* Frontend and backend are intentionally maintained as separate repositories
-* The project is designed to work even if AI functionality is disabled
-
----
-
-## Author
-
-Raphael A.
-M.Sc. Computer Science
-Loyola College, Madras University
-
----
+Just tell me what you want next.
