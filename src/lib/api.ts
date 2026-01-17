@@ -8,10 +8,20 @@ export interface Task {
 }
 
 export type AICommandResponse =
-  | Task
-  | Task[]
-  | { message: string }
-  | { error: string };
+  | {
+      type: 'SHOW_TASKS';
+      message: string;
+      data: Task[];
+    }
+  | {
+      type: 'ERROR';
+      error: string;
+    }
+  | {
+      type: 'TASK';
+      task: Task;
+    };
+
 
 export async function createTask(title: string): Promise<Task> {
   const response = await fetch(`${BASE_URL}/tasks`, {

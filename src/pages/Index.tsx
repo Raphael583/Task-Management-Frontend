@@ -122,13 +122,23 @@ const handleRunAICommand = async (command: string) => {
   try {
     const response = await runAICommand(command);
 
-    //  SHOW_TASKS → Task[]
-    if (Array.isArray(response)) {
-      setTasks(response);
-      setAIResult(`Showing ${response.length} task(s)`);
-      toast.success('Tasks loaded');
-      return;
-    }
+   if (
+  typeof response === 'object' &&
+  response !== null &&
+  'data' in response &&
+  Array.isArray(response.data)
+) {
+  
+  setTasks(response.data);
+
+  if (response.message) {
+    setAIResult(response.message);
+    toast.success(response.message);
+  }
+
+  return; 
+}
+
 
     //  ERROR OBJECT
     if ('error' in response) {
@@ -158,9 +168,7 @@ const handleRunAICommand = async (command: string) => {
   }
 };
 
-
-
-  const handleFilterChange = (filter: FilterOption) => {
+ const handleFilterChange = (filter: FilterOption) => {
     setActiveFilter(filter);
   };
 
